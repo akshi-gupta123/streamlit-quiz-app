@@ -30,6 +30,15 @@ st.markdown("""
         margin: 0.8rem 0;
     }
     
+    /* Question text styling - SET TO BLACK FOR BETTER VISIBILITY */
+    .question-text {
+        color: #000000 !important;
+        font-size: 1.5rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+    
     /* Timer styling */
     .timer {
         font-size: 3rem;
@@ -62,7 +71,7 @@ st.markdown("""
     /* Button styling */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, #6E8CFB);
+        background: linear-gradient(135deg, #6E8CFB, #764ba2);
         color: white;
         border: none;
         padding: 0.75rem 2rem;
@@ -105,9 +114,10 @@ st.markdown("""
     }
     
     h2 {
-        color: #2d3748;
+        color: #000000 !important; /* Set to black for better visibility */
         font-size: 1.5rem;
         margin-bottom: 1rem;
+        font-weight: 600;
     }
     
     /* Result card */
@@ -140,6 +150,25 @@ st.markdown("""
         color: white;
         margin-bottom: 1rem;
         font-size: 1.1rem;
+    }
+    
+    /* Option text styling */
+    .option-text {
+        color: #2d3748;
+        font-size: 1.1rem;
+    }
+    
+    /* Ensure all text in question cards is visible */
+    .question-card h2,
+    .question-card h3,
+    .question-card p,
+    .question-card strong {
+        color: #000000 !important;
+    }
+    
+    /* Result details text */
+    .result-details {
+        color: #000000 !important;
     }
     
     </style>
@@ -492,7 +521,7 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
         with col2:
             st.markdown(f"""
                 <div class="question-card">
-                    <h2>{question_data['Question']}</h2>
+                    <h2 style="color: #000000;">{question_data['Question']}</h2>
                 </div>
             """, unsafe_allow_html=True)
             
@@ -604,14 +633,14 @@ elif st.session_state.quiz_completed:
             st.markdown(f"""
                 <div class="question-card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="color: #2d3748; margin: 0;">Question {idx}</h3>
+                        <h3 style="color: #000000; margin: 0;">Question {idx}</h3>
                         <span style="color: {color}; font-weight: bold; font-size: 1.2rem;">{status}</span>
                     </div>
-                    <p style="font-size: 1.1rem; margin: 1rem 0;"><strong>{answer['question']}</strong></p>
-                    <p style="color: #4a5568;">
+                    <p style="font-size: 1.1rem; margin: 1rem 0; color: #000000;"><strong>{answer['question']}</strong></p>
+                    <p style="color: #000000;">
                         <strong>Your answer:</strong> {answer.get('selected', 'No answer (timeout)')}<br>
                         <strong>Correct answer:</strong> {answer['correct']}
                     </p>
-                    {f'<p style="color: #4a5568; margin-top: 1rem;"><em>{answer.get("explanation", "")}</em></p>' if answer.get('selected') is not None and not answer.get('timed_out') else ''}
+                    {f'<p style="color: #000000; margin-top: 1rem;"><em>{answer.get("explanation", "")}</em></p>' if answer.get('selected') is not None and not answer.get('timed_out') else ''}
                 </div>
             """, unsafe_allow_html=True)
