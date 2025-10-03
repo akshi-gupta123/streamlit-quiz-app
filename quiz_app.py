@@ -39,6 +39,29 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     
+    /* Explanation card styling */
+    .explanation-card {
+        background: #f0fff4;
+        border: 2px solid #9ae6b4;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .explanation-title {
+        color: #22543d;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .explanation-text {
+        color: #2d3748;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+    
     /* Timer styling */
     .timer {
         font-size: 3rem;
@@ -342,6 +365,9 @@ if 'quiz_started' not in st.session_state:
     st.session_state.answers = []
     st.session_state.start_time = None
     st.session_state.quiz_completed = False
+    st.session_state.show_explanation = False
+    st.session_state.explanation_start_time = None
+    st.session_state.explanation_data = None
 
 # Functions for email tracking
 def get_attempted_emails():
@@ -436,9 +462,17 @@ def get_time_remaining():
     """Calculate remaining time for current question"""
     if st.session_state.start_time:
         elapsed = time.time() - st.session_state.start_time
-        remaining = max(0, 20 - int(elapsed))
+        remaining = max(0, 15 - int(elapsed))
         return remaining
-    return 20
+    return 15
+
+def get_explanation_time_remaining():
+    """Calculate remaining time for explanation display"""
+    if st.session_state.explanation_start_time:
+        elapsed = time.time() - st.session_state.explanation_start_time
+        remaining = max(0, 7 - int(elapsed))
+        return remaining
+    return 7
 
 # Main app
 st.markdown("<h1>🧠 AI Knowledge Quiz</h1>", unsafe_allow_html=True)
@@ -452,11 +486,12 @@ if not st.session_state.quiz_started and not st.session_state.quiz_completed:
                 <h2 style="text-align: center; color: #667eea;">Welcome to the AI Quiz!</h2>
                 <p style="text-align: center; font-size: 1.1rem; color: #4a5568; margin: 1rem 0;">
                     Test your knowledge of Artificial Intelligence.<br>
-                    You'll have 20 seconds to answer each question.<br><br>
+                    You'll have 15 seconds to answer each question.<br><br>
                     <strong>Ready to challenge yourself?</strong>
                 </p>
             </div>
         """, unsafe_allow_html=True)
+        
         
         email = st.text_input("📧 Enter your email address:", placeholder="your.name@spglobal.com")
         
@@ -497,80 +532,138 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
             </div>
         """, unsafe_allow_html=True)
         
-        # Timer
-        time_remaining = get_time_remaining()
-        timer_class = "timer warning" if time_remaining <= 5 else "timer"
-        timer_placeholder = st.empty()
-        timer_placeholder.markdown(f'<div class="{timer_class}">⏱️ {time_remaining}s</div>', unsafe_allow_html=True)
-        
-        # Auto-submit if time runs out
-        if time_remaining == 0:
-            st.session_state.answers.append({
-                'question': question_data['Question'],
-                'selected': None,
-                'correct': question_data['Correct_Answer'],
-                'timed_out': True
-            })
-            st.session_state.current_question += 1
-            if st.session_state.current_question < len(st.session_state.questions):
-                st.session_state.start_time = time.time()
-            st.rerun()
-        
-        # Question card
-        col1, col2, col3 = st.columns([1, 3, 1])
-        with col2:
-            st.markdown(f"""
-                <div class="question-card">
-                    <h2 style="color: #000000;">{question_data['Question']}</h2>
-                </div>
-            """, unsafe_allow_html=True)
+        # Show explanation screen if active
+        if st.session_state.show_explanation and st.session_state.explanation_data:
+            explanation_time_remaining = get_explanation_time_remaining()
             
-            # Options
-            options = {
-                'A': question_data['Option_A'],
-                'B': question_data['Option_B'],
-                'C': question_data['Option_C'],
-                'D': question_data['Option_D']
-            }
-            
-            # No option pre-selected and disabled submit button when no selection
-            selected = st.radio(
-                "Select your answer:",
-                options.keys(),
-                format_func=lambda x: f"{x}. {options[x]}",
-                key=f"q_{current_q_idx}",
-                index=None  # This prevents any option from being pre-selected
-            )
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            # Disable submit button if no option selected
-            if st.button("✅ Submit Answer", key=f"submit_{current_q_idx}", disabled=selected is None):
-                is_correct = selected == question_data['Correct_Answer']
-                if is_correct:
-                    st.session_state.score += 1
+            col1, col2, col3 = st.columns([1, 3, 1])
+            with col2:
                 
+                # Show selected answer as disabled radio
+                selected = st.session_state.explanation_data['selected']
+                
+                # Show answer feedback
+                is_correct = st.session_state.explanation_data['is_correct']
+                status_color = "#51cf66" if is_correct else "#ff6b6b"
+                status_text = "✅ Correct!" if is_correct else "❌ Incorrect"
+                
+                st.markdown(f"""
+                    <div style="background: {'#f0fff4' if is_correct else '#fff5f5'}; 
+                                border: 2px solid {'#9ae6b4' if is_correct else '#fed7d7'}; 
+                                border-radius: 10px; padding: 1rem; margin: 1rem 0;">
+                        <div style="color: {status_color}; font-size: 1.3rem; font-weight: bold; text-align: center;">
+                            {status_text}
+                        </div>
+                        <div style="color: #2d3748; text-align: center; margin-top: 0.5rem;">
+                            <strong>Your answer:</strong> {selected} &nbsp; | &nbsp;
+                            <strong>Correct answer:</strong> {question_data['Correct_Answer']}
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Show explanation
+                st.markdown(f"""
+                    <div class="explanation-card">
+                        <div class="explanation-title">💡 Explanation</div>
+                        <div class="explanation-text">
+                            {st.session_state.explanation_data['explanation']}
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Auto-proceed after 10 seconds (no timer shown on UI)
+                if explanation_time_remaining > 0:
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    # Explanation time finished, move to next question
+                    st.session_state.show_explanation = False
+                    st.session_state.explanation_data = None
+                    st.session_state.current_question += 1
+                    
+                    if st.session_state.current_question < len(st.session_state.questions):
+                        st.session_state.start_time = time.time()
+                    else:
+                        st.session_state.quiz_completed = True
+                    st.rerun()
+        
+        else:
+            # Normal question screen with 15-second timer
+            # Timer
+            time_remaining = get_time_remaining()
+            timer_class = "timer warning" if time_remaining <= 5 else "timer"
+            timer_placeholder = st.empty()
+            timer_placeholder.markdown(f'<div class="{timer_class}">⏱️ {time_remaining}s</div>', unsafe_allow_html=True)
+            
+            # Auto-submit if time runs out
+            if time_remaining == 0:
                 st.session_state.answers.append({
                     'question': question_data['Question'],
-                    'selected': selected,
+                    'selected': None,
                     'correct': question_data['Correct_Answer'],
-                    'is_correct': is_correct,
-                    'explanation': question_data['Explanation'],
-                    'timed_out': False
+                    'timed_out': True
                 })
-                
                 st.session_state.current_question += 1
-                
                 if st.session_state.current_question < len(st.session_state.questions):
                     st.session_state.start_time = time.time()
-                else:
-                    st.session_state.quiz_completed = True
-                
                 st.rerun()
-        
-        # Auto-refresh for timer
-        time.sleep(1)
-        st.rerun()
+            
+            # Question card
+            col1, col2, col3 = st.columns([1, 3, 1])
+            with col2:
+                st.markdown(f"""
+                    <div class="question-card">
+                        <h2 style="color: #000000;">{question_data['Question']}</h2>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Options
+                options = {
+                    'A': question_data['Option_A'],
+                    'B': question_data['Option_B'],
+                    'C': question_data['Option_C'],
+                    'D': question_data['Option_D']
+                }
+                
+                # No option pre-selected and disabled submit button when no selection
+                selected = st.radio(
+                    "Select your answer:",
+                    options.keys(),
+                    format_func=lambda x: f"{x}. {options[x]}",
+                    key=f"q_{current_q_idx}",
+                    index=None  # This prevents any option from being pre-selected
+                )
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Submit button
+                if st.button("✅ Submit Answer", key=f"submit_{current_q_idx}", disabled=selected is None):
+                    is_correct = selected == question_data['Correct_Answer']
+                    if is_correct:
+                        st.session_state.score += 1
+                    
+                    st.session_state.answers.append({
+                        'question': question_data['Question'],
+                        'selected': selected,
+                        'correct': question_data['Correct_Answer'],
+                        'is_correct': is_correct,
+                        'explanation': question_data['Explanation'],
+                        'timed_out': False
+                    })
+                    
+                    # Show explanation for 10 seconds
+                    st.session_state.show_explanation = True
+                    st.session_state.explanation_start_time = time.time()
+                    st.session_state.explanation_data = {
+                        'explanation': question_data['Explanation'],
+                        'is_correct': is_correct,
+                        'selected': selected
+                    }
+                    st.rerun()
+            
+            # Auto-refresh for timer
+            time.sleep(1)
+            st.rerun()
     
 # Results screen
 elif st.session_state.quiz_completed:
