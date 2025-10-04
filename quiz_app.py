@@ -274,16 +274,6 @@ def check_logo_answer(user_answer, correct_name, alt_names):
     correct_names = [correct_name.lower()] + [alt.lower() for alt in alt_names]
     return user_answer_clean in correct_names
 
-def get_single_logo_question():
-    """Get a single random logo for questions 7 and 8"""
-    logo = random.choice(all_logos)
-    return {
-        'type': 'single_logo_quiz',
-        'question': 'Identify the following logo:',
-        'logo': logo,
-        'correct_answer': logo['name']
-    }
-
 # Load quiz data
 @st.cache_data
 def load_quiz_data():
@@ -799,6 +789,25 @@ def store_email_attempt(email):
     store_attempted_email(email)
     store_persistent_attempted_email(email)
 
+def get_single_logo_question(exclude_logos=None):
+    """Get a single random logo for questions 7 and 8"""
+    if exclude_logos is None:
+        exclude_logos = []
+    
+    available_logos = [logo for logo in all_logos if logo['name'] not in exclude_logos]
+    
+    if not available_logos:
+        # If all logos are excluded, fall back to all logos
+        available_logos = all_logos
+    
+    logo = random.choice(available_logos)
+    return {
+        'type': 'single_logo_quiz',
+        'question': 'Identify the following logo:',
+        'logo': logo,
+        'correct_answer': logo['name']
+    }
+
 def select_random_questions(df, num_questions=6):
     """Select random questions from different categories"""
     categories = df['Category'].unique()
@@ -821,9 +830,13 @@ def select_random_questions(df, num_questions=6):
     
     random.shuffle(selected_questions)
     
-    # Add two single logo quiz questions (7th and 8th questions)
-    selected_questions.append(get_single_logo_question())  # 7th question
-    selected_questions.append(get_single_logo_question())  # 8th question
+    # Add two single logo quiz questions (7th and 8th questions) with different logos
+    first_logo_question = get_single_logo_question()
+    excluded_logos = [first_logo_question['logo']['name']]
+    second_logo_question = get_single_logo_question(exclude_logos=excluded_logos)
+    
+    selected_questions.append(first_logo_question)  # 7th question
+    selected_questions.append(second_logo_question)  # 8th question
     
     return selected_questions
 
