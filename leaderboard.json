@@ -1,0 +1,26 @@
+[
+  {
+    "email": "akshi@spglobal.com",
+    "score": 5,
+    "total_questions": 8,
+    "percentage": 62,
+    "timestamp": "2025-10-04T20:08:43.025676",
+    "date": "2025-10-04 20:08:43"
+  },
+  {
+    "email": "akshi1@spglobal.com",
+    "score": 5,
+    "total_questions": 8,
+    "percentage": 62,
+    "timestamp": "2025-10-04T20:16:14.277749",
+    "date": "2025-10-04 20:16:14"
+  },
+  {
+    "email": "abc@spglobal.com",
+    "score": 5,
+    "total_questions": 8,
+    "percentage": 62,
+    "timestamp": "2025-10-04T20:19:55.326695",
+    "date": "2025-10-04 20:19:55"
+  }
+]

@@ -246,62 +246,26 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo quiz data
-logo_sets = [
-    {
-        'id': 1,
-        'category': 'AI & ML',
-        'logos': [
-            {'name': 'TensorFlow', 'image': 'logos/tensorflow.png', 'alt': ['tensorflow']},
-            {'name': 'PyTorch', 'image': 'logos/pytorch.png', 'alt': ['pytorch']},
-            {'name': 'OpenAI', 'image': 'logos/openai.png', 'alt': ['openai']}
-        ]
-    },
-    {
-        'id': 2,
-        'category': 'AWS Services',
-        'logos': [
-            {'name': 'AWS Lambda', 'image': 'logos/aws-lambda.png', 'alt': ['lambda']},
-            {'name': 'Amazon S3', 'image': 'logos/amazon-s3.png', 'alt': ['s3']},
-            {'name': 'SageMaker', 'image': 'logos/sagemaker.png', 'alt': ['sagemaker']}
-        ]
-    },
-    {
-        'id': 3,
-        'category': 'Data Analytics',
-        'logos': [
-            {'name': 'Tableau', 'image': 'logos/tableau.png', 'alt': ['tableau']},
-            {'name': 'Power BI', 'image': 'logos/powerbi.png', 'alt': ['powerbi', 'power bi']},
-            {'name': 'Snowflake', 'image': 'logos/snowflake.png', 'alt': ['snowflake']}
-        ]
-    },
-    {
-        'id': 4,
-        'category': 'Programming',
-        'logos': [
-            {'name': 'Python', 'image': 'logos/python.png', 'alt': ['python']},
-            {'name': 'Java', 'image': 'logos/java.png', 'alt': ['java']},
-            {'name': 'JavaScript', 'image': 'logos/javascript.png', 'alt': ['javascript', 'js']}
-        ]
-    },
-    {
-        'id': 5,
-        'category': 'Deep Learning',
-        'logos': [
-            {'name': 'Keras', 'image': 'logos/keras.png', 'alt': ['keras']},
-            {'name': 'Hugging Face', 'image': 'logos/huggingface.png', 'alt': ['huggingface', 'hugging face']},
-            {'name': 'NVIDIA', 'image': 'logos/nvidia.png', 'alt': ['nvidia']}
-        ]
-    },
-    {
-        'id': 6,
-        'category': 'Big Data',
-        'logos': [
-            {'name': 'DynamoDB', 'image': 'logos/dynamodb.png', 'alt': ['dynamodb']},
-            {'name': 'Apache Spark', 'image': 'logos/apache-spark.png', 'alt': ['spark', 'apache spark']},
-            {'name': 'Redshift', 'image': 'logos/redshift.png', 'alt': ['redshift']}
-        ]
-    }
+# All available logos data
+all_logos = [
+    {'name': 'TensorFlow', 'image': 'logos/tensorflow.png', 'alt': ['tensorflow']},
+    {'name': 'PyTorch', 'image': 'logos/pytorch.png', 'alt': ['pytorch']},
+    {'name': 'OpenAI', 'image': 'logos/openai.png', 'alt': ['openai']},
+    {'name': 'AWS Lambda', 'image': 'logos/aws-lambda.png', 'alt': ['lambda']},
+    {'name': 'Amazon S3', 'image': 'logos/amazon-s3.png', 'alt': ['s3']},
+    {'name': 'SageMaker', 'image': 'logos/sagemaker.png', 'alt': ['sagemaker']},
+    {'name': 'Tableau', 'image': 'logos/tableau.png', 'alt': ['tableau']},
+    {'name': 'Power BI', 'image': 'logos/powerbi.png', 'alt': ['powerbi', 'power bi']},
+    {'name': 'Snowflake', 'image': 'logos/snowflake.png', 'alt': ['snowflake']},
+    {'name': 'Python', 'image': 'logos/python.png', 'alt': ['python']},
+    {'name': 'Java', 'image': 'logos/java.png', 'alt': ['java']},
+    {'name': 'JavaScript', 'image': 'logos/javascript.png', 'alt': ['javascript', 'js']},
+    {'name': 'Keras', 'image': 'logos/keras.png', 'alt': ['keras']},
+    {'name': 'Hugging Face', 'image': 'logos/huggingface.png', 'alt': ['huggingface', 'hugging face']},
+    {'name': 'NVIDIA', 'image': 'logos/nvidia.png', 'alt': ['nvidia']},
+    {'name': 'DynamoDB', 'image': 'logos/dynamodb.png', 'alt': ['dynamodb']},
+    {'name': 'Apache Spark', 'image': 'logos/apache-spark.png', 'alt': ['spark', 'apache spark']},
+    {'name': 'Redshift', 'image': 'logos/redshift.png', 'alt': ['redshift']}
 ]
 
 def check_logo_answer(user_answer, correct_name, alt_names):
@@ -310,20 +274,14 @@ def check_logo_answer(user_answer, correct_name, alt_names):
     correct_names = [correct_name.lower()] + [alt.lower() for alt in alt_names]
     return user_answer_clean in correct_names
 
-def get_logo_question():
-    """Get a random logo question with 3 logos from different categories"""
-    selected_categories = random.sample(logo_sets, 3)
-    question_logos = []
-    
-    for category in selected_categories:
-        logo = random.choice(category['logos'])
-        question_logos.append(logo)
-    
+def get_single_logo_question():
+    """Get a single random logo for questions 7 and 8"""
+    logo = random.choice(all_logos)
     return {
-        'type': 'logo_quiz',
-        'question': 'Identify the following logos:',
-        'logos': question_logos,
-        'correct_answers': [logo['name'] for logo in question_logos]
+        'type': 'single_logo_quiz',
+        'question': 'Identify the following logo:',
+        'logo': logo,
+        'correct_answer': logo['name']
     }
 
 # Load quiz data
@@ -863,9 +821,9 @@ def select_random_questions(df, num_questions=6):
     
     random.shuffle(selected_questions)
     
-    # Add two logo quiz questions (7th and 8th questions)
-    selected_questions.append(get_logo_question())  # 7th question
-    selected_questions.append(get_logo_question())  # 8th question
+    # Add two single logo quiz questions (7th and 8th questions)
+    selected_questions.append(get_single_logo_question())  # 7th question
+    selected_questions.append(get_single_logo_question())  # 8th question
     
     return selected_questions
 
@@ -873,7 +831,11 @@ def get_time_remaining():
     """Calculate remaining time for current question"""
     if st.session_state.start_time:
         elapsed = time.time() - st.session_state.start_time
-        remaining = max(0, 20 - int(elapsed))
+        # Questions 7 and 8 (index 6 and 7) get 25 seconds, others get 20
+        if st.session_state.current_question in [6, 7]:  # 7th and 8th questions
+            remaining = max(0, 25 - int(elapsed))
+        else:
+            remaining = max(0, 20 - int(elapsed))
         return remaining
     return 20
 
@@ -896,7 +858,7 @@ if not st.session_state.quiz_started and not st.session_state.quiz_completed:
             <div class="question-card">
                 <h2 style="text-align: center; color: #667eea;">Welcome to the AI Quiz! 🧠</h2>
                 <p style="text-align: center; font-size: 1.1rem; color: #4a5568; margin: 1rem 0;">
-                    You'll have 20 seconds to answer each question.<br>
+                    You'll have 20 to 25 seconds to answer each question.<br>
                     <strong style="color: #e53e3e;">🎁 Exciting goodies will be provided to Winners!</strong><br>
                     <strong style="color: #d69e2e;">⚠️ Rewards will be provided only to valid users, carefully fill your email.</strong><br>
                     <strong style="color: #d69e2e;">⚠️ </strong> Remember to click the <strong>Submit Answer</strong> button for each question!<br><br>
@@ -961,8 +923,8 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                 
                 # Check if it's a logo quiz or regular question
                 current_question = st.session_state.questions[st.session_state.current_question]
-                if current_question.get('type') == 'logo_quiz':
-                    # For logo quiz, show different message
+                if current_question.get('type') == 'single_logo_quiz':
+                    # For single logo quiz, show different message
                     st.markdown(f"""
                         <div style="background: {'#f0fff4' if is_correct else '#fff5f5'}; 
                                     border: 2px solid {'#9ae6b4' if is_correct else '#fed7d7'}; 
@@ -1001,7 +963,7 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                     </div>
                 """, unsafe_allow_html=True)
                 
-                # Auto-proceed after 10 seconds (no timer shown on UI)
+                # Auto-proceed after 7 seconds (no timer shown on UI)
                 if explanation_time_remaining > 0:
                     time.sleep(1)
                     st.rerun()
@@ -1017,7 +979,7 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                         st.session_state.quiz_completed = True
                     st.rerun()
         else:
-            # Normal question screen with 15-second timer
+            # Normal question screen with timer
             # Timer
             time_remaining = get_time_remaining()
             timer_class = "timer warning" if time_remaining <= 5 else "timer"
@@ -1026,14 +988,14 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
             
             # Auto-submit if time runs out
             if time_remaining == 0:
-                if question_data.get('type') == 'logo_quiz':
-                    # For logo quiz, store empty answers
+                if question_data.get('type') == 'single_logo_quiz':
+                    # For single logo quiz, store empty answer
                     st.session_state.answers.append({
                         'question': question_data['question'],
-                        'type': 'logo_quiz',
-                        'logos': question_data['logos'],
-                        'user_answers': ['', '', ''],
-                        'correct_answers': question_data['correct_answers'],
+                        'type': 'single_logo_quiz',
+                        'logo': question_data['logo'],
+                        'user_answer': '',
+                        'correct_answer': question_data['correct_answer'],
                         'is_correct': False,
                         'timed_out': True
                     })
@@ -1052,55 +1014,47 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
             # Question card
             col1, col2, col3 = st.columns([1, 3, 1])
             with col2:
-                if question_data.get('type') == 'logo_quiz':
-                    # Logo quiz question
+                if question_data.get('type') == 'single_logo_quiz':
+                    # Single logo quiz question (questions 7 and 8)
                     st.markdown(f"""
                         <div class="question-card">
                             <h2 style="color: #000000;">{question_data['question']}</h2>
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    # Display all three logos side by side in one row
-                    cols = st.columns(3)
-                    logo_inputs = []
-                    
-                    for i, logo in enumerate(question_data['logos']):
-                        with cols[i]:
-                            st.image(logo['image'], width=120)
-                            user_input = st.text_input(f"Logo {i+1} name:", key=f"logo_{current_q_idx}_{i}")
-                            logo_inputs.append(user_input)
+                    # Display the single logo in the center
+                    col_img1, col_img2, col_img3 = st.columns([1, 2, 1])
+                    with col_img2:
+                        st.image(question_data['logo']['image'], width=200)
+                        user_input = st.text_input("Enter the logo name:", key=f"logo_{current_q_idx}")
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # Submit button for logo quiz
+                    # Submit button for single logo quiz
                     if st.button("✅ Submit Answer", key=f"submit_{current_q_idx}"):
-                        # Check all answers
-                        all_correct = True
-                        for i, (user_input, logo) in enumerate(zip(logo_inputs, question_data['logos'])):
-                            if not check_logo_answer(user_input, logo['name'], logo.get('alt', [])):
-                                all_correct = False
-                                break
+                        # Check the answer
+                        is_correct = check_logo_answer(user_input, question_data['correct_answer'], question_data['logo'].get('alt', []))
                         
-                        if all_correct:
+                        if is_correct:
                             st.session_state.score += 1
                         
                         st.session_state.answers.append({
                             'question': question_data['question'],
-                            'type': 'logo_quiz',
-                            'logos': question_data['logos'],
-                            'user_answers': logo_inputs,
-                            'correct_answers': question_data['correct_answers'],
-                            'is_correct': all_correct,
+                            'type': 'single_logo_quiz',
+                            'logo': question_data['logo'],
+                            'user_answer': user_input,
+                            'correct_answer': question_data['correct_answer'],
+                            'is_correct': is_correct,
                             'timed_out': False
                         })
                         
-                        # Show explanation for 10 seconds
+                        # Show explanation for 7 seconds
                         st.session_state.show_explanation = True
                         st.session_state.explanation_start_time = time.time()
                         st.session_state.explanation_data = {
-                            'explanation': f"Correct answers: {', '.join(question_data['correct_answers'])}",
-                            'is_correct': all_correct,
-                            'selected': f"Your answers: {', '.join(logo_inputs) if any(logo_inputs) else 'No answers provided'}"
+                            'explanation': f"Correct answer: {question_data['correct_answer']}",
+                            'is_correct': is_correct,
+                            'selected': f"Your answer: {user_input if user_input else 'No answer provided'}"
                         }
                         st.rerun()
 
@@ -1146,7 +1100,7 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                             'timed_out': False
                         })
                         
-                        # Show explanation for 10 seconds
+                        # Show explanation for 7 seconds
                         st.session_state.show_explanation = True
                         st.session_state.explanation_start_time = time.time()
                         st.session_state.explanation_data = {
@@ -1165,7 +1119,7 @@ elif st.session_state.quiz_completed:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         # Calculate score based on attempted questions only
-        attempted_questions = [ans for ans in st.session_state.answers if ans.get('selected') is not None or ans.get('user_answers') or ans.get('timed_out')]
+        attempted_questions = [ans for ans in st.session_state.answers if ans.get('selected') is not None or ans.get('user_answer') or ans.get('timed_out')]
         correct_answers = [ans for ans in attempted_questions if ans.get('is_correct', False)]
         
         total_attempted = len(attempted_questions)
@@ -1211,15 +1165,15 @@ elif st.session_state.quiz_completed:
             elif answer.get('is_correct'):
                 status = "✅ Correct"
                 color = "#51cf66"
-            elif answer.get('selected') is None and not answer.get('user_answers'):
+            elif answer.get('selected') is None and not answer.get('user_answer'):
                 status = "⏭️ Not Attempted"
                 color = "#a0aec0"
             else:
                 status = "❌ Incorrect"
                 color = "#ff6b6b"
             
-            if answer.get('type') == 'logo_quiz':
-                # Logo quiz result
+            if answer.get('type') == 'single_logo_quiz':
+                # Single logo quiz result
                 st.markdown(f"""
                     <div class="question-card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1230,19 +1184,18 @@ elif st.session_state.quiz_completed:
                     </div>
                 """, unsafe_allow_html=True)
                 
-                # Display logos side by side
-                cols = st.columns(3)
-                for i, (logo, user_answer, correct_answer) in enumerate(zip(answer['logos'], answer['user_answers'], answer['correct_answers'])):
-                    with cols[i]:
-                        st.image(logo['image'], width=100)
-                        is_logo_correct = check_logo_answer(user_answer, correct_answer, logo.get('alt', []))
-                        answer_color = "#51cf66" if is_logo_correct else "#ff6b6b"
-                        st.markdown(f"""
-                            <p style="color: {answer_color}; font-weight: bold; text-align: center;">
-                                Your answer: {user_answer if user_answer else 'No answer'}<br>
-                                Correct: {correct_answer}
-                            </p>
-                        """, unsafe_allow_html=True)
+                # Display the single logo
+                col_img1, col_img2, col_img3 = st.columns([1, 2, 1])
+                with col_img2:
+                    st.image(answer['logo']['image'], width=150)
+                    is_logo_correct = check_logo_answer(answer['user_answer'], answer['correct_answer'], answer['logo'].get('alt', []))
+                    answer_color = "#51cf66" if is_logo_correct else "#ff6b6b"
+                    st.markdown(f"""
+                        <p style="color: {answer_color}; font-weight: bold; text-align: center;">
+                            Your answer: {answer['user_answer'] if answer['user_answer'] else 'No answer'}<br>
+                            Correct: {answer['correct_answer']}
+                        </p>
+                    """, unsafe_allow_html=True)
             else:
                 # Regular question result
                 st.markdown(f"""
