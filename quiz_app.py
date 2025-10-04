@@ -894,15 +894,6 @@ if not st.session_state.quiz_started and not st.session_state.quiz_completed:
 elif st.session_state.quiz_started and not st.session_state.quiz_completed:
     current_q_idx = st.session_state.current_question
     
-    # Auto-scroll to top JavaScript
-    st.markdown("""
-        <script>
-        function scrollToTop() {
-            window.parent.document.querySelector('section.main').scrollTo(0, 0);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-    
     if current_q_idx < len(st.session_state.questions):
         question_data = st.session_state.questions[current_q_idx]
         
@@ -1039,15 +1030,8 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # Submit button for single logo quiz with auto-scroll
+                    # Submit button for single logo quiz
                     if st.button("✅ Submit Answer", key=f"submit_{current_q_idx}"):
-                        # Scroll to top
-                        st.markdown("""
-                            <script>
-                            window.parent.document.querySelector('section.main').scrollTo(0, 0);
-                            </script>
-                        """, unsafe_allow_html=True)
-                        
                         # Check the answer
                         is_correct = check_logo_answer(user_input, question_data['correct_answer'], question_data['logo'].get('alt', []))
                         
@@ -1101,15 +1085,8 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # Submit button with auto-scroll
+                    # Submit button
                     if st.button("✅ Submit Answer", key=f"submit_{current_q_idx}", disabled=selected is None):
-                        # Scroll to top
-                        st.markdown("""
-                            <script>
-                            window.parent.document.querySelector('section.main').scrollTo(0, 0);
-                            </script>
-                        """, unsafe_allow_html=True)
-                        
                         is_correct = selected == question_data['Correct_Answer']
                         if is_correct:
                             st.session_state.score += 1
