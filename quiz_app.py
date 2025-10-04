@@ -1060,18 +1060,15 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                         </div>
                     """, unsafe_allow_html=True)
                     
-                    # Display logos in a row
-                    st.markdown('<div class="logo-container">', unsafe_allow_html=True)
-                    
+                    # Display all three logos side by side in one row
+                    cols = st.columns(3)
                     logo_inputs = []
+                    
                     for i, logo in enumerate(question_data['logos']):
-                        col1, col2, col3 = st.columns(3)
-                        with [col1, col2, col3][i]:
+                        with cols[i]:
                             st.image(logo['image'], width=120)
                             user_input = st.text_input(f"Logo {i+1} name:", key=f"logo_{current_q_idx}_{i}")
                             logo_inputs.append(user_input)
-                    
-                    st.markdown('</div>', unsafe_allow_html=True)
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
@@ -1106,7 +1103,7 @@ elif st.session_state.quiz_started and not st.session_state.quiz_completed:
                             'selected': f"Your answers: {', '.join(logo_inputs) if any(logo_inputs) else 'No answers provided'}"
                         }
                         st.rerun()
-                
+
                 else:
                     # Regular multiple choice question
                     st.markdown(f"""
@@ -1230,23 +1227,22 @@ elif st.session_state.quiz_completed:
                             <span style="color: {color}; font-weight: bold; font-size: 1.2rem;">{status}</span>
                         </div>
                         <p style="font-size: 1.1rem; margin: 1rem 0; color: #000000;"><strong>{answer['question']}</strong></p>
-                        <div class="logo-container">
+                    </div>
                 """, unsafe_allow_html=True)
                 
+                # Display logos side by side
+                cols = st.columns(3)
                 for i, (logo, user_answer, correct_answer) in enumerate(zip(answer['logos'], answer['user_answers'], answer['correct_answers'])):
-                    col1, col2, col3 = st.columns(3)
-                    with [col1, col2, col3][i]:
+                    with cols[i]:
                         st.image(logo['image'], width=100)
                         is_logo_correct = check_logo_answer(user_answer, correct_answer, logo.get('alt', []))
                         answer_color = "#51cf66" if is_logo_correct else "#ff6b6b"
                         st.markdown(f"""
-                            <p style="color: {answer_color}; font-weight: bold;">
+                            <p style="color: {answer_color}; font-weight: bold; text-align: center;">
                                 Your answer: {user_answer if user_answer else 'No answer'}<br>
                                 Correct: {correct_answer}
                             </p>
                         """, unsafe_allow_html=True)
-                
-                st.markdown("</div></div>", unsafe_allow_html=True)
             else:
                 # Regular question result
                 st.markdown(f"""
